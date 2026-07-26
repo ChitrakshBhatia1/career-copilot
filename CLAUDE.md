@@ -6,6 +6,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Career Copilot is an AI-powered career management platform for software engineering students, built as a Python application. It is being developed from scratch with Claude Code, and this file should be kept up to date as real architecture, commands, and conventions come into existence.
 
+Near-term work follows the approved v0.1 MVP roadmap (see `/Users/chitrakshbhatia/.claude/plans/starry-tickling-llama.md`), scoped to project foundation, discovery from a small number of sources, SQLite persistence, rule-based resume matching, and daily notifications. The rest of the vision below is deferred until v0.1 ships.
+
 The initial focus is Summer 2027 internship and new-grad opportunity discovery, primarily for the Indian market with openness to opportunities abroad. Planned capabilities, roughly in order of build-out:
 
 1. **Opportunity discovery** — finding internship/new-grad listings relevant to the user.
@@ -19,7 +21,7 @@ The initial focus is Summer 2027 internship and new-grad opportunity discovery, 
 
 ## Current state
 
-This repository is a greenfield scaffold: a `hello.py` smoke-test script and a local `.venv` (Python 3.14, created via `python -m venv`). There is no package layout, dependency manifest, test suite, or CI yet. Do not assume any of the architecture below already exists in code — treat it as the direction to build toward, not a description of what's present. As real modules, dependencies, and tooling are added, update this file (structure, run/test/lint commands, etc.) so it stays accurate rather than aspirational.
+M0 (project foundation) is complete: a `uv`-managed `src/` layout package (`src/career_copilot/`) with an `argparse`-based CLI (`cli.py`), centralized logging (`logging_config.py` — console INFO+, rotating file DEBUG+ under `logs/`), a `pytest` suite (`tests/`), and `ruff` for linting/formatting. `hello.py` and the old plain `.venv` are gone. Significant technical decisions are logged in `docs/engineering-decisions.md` as they're made. Do not assume any of the architecture below already exists in code beyond what's described here — treat the rest as the direction to build toward. As real modules, dependencies, and tooling are added, update this file so it stays accurate rather than aspirational.
 
 Because the pipeline above naturally decomposes into distinct stages (discovery, automation, matching, tailoring, generation, tracking, notification) with a multi-agent design explicitly called out, favor a modular package layout from the start (e.g. one package/module per pipeline stage) rather than a single monolithic script, even while functionality is still minimal.
 
@@ -30,13 +32,15 @@ Because the pipeline above naturally decomposes into distinct stages (discovery,
 - **Git-based workflow**: work happens on `develop` off `main`. Only commit when explicitly asked (see global instructions); never force-push or rewrite shared history without asking first.
 - **User approval before irreversible actions**: given the eventual scope (browser automation against real company career pages, AI-generated application materials, and actual submissions), any code path that could submit an application, send an email, or otherwise act on the user's behalf on an external site must include an explicit human-review/approval step — do not design "auto-submit" flows.
 - **Teaching while building**: the user is an experienced Java engineer who is new to Python and to this project's problem domain (AI agents, browser automation, resume/NLP tooling). When introducing a Python idiom, library, or agentic-AI concept that doesn't have a direct Java equivalent, briefly explain the "why," and prefer calling it out inline over silently doing something unfamiliar. No need to explain basic programming concepts — focus explanations on what's Python-specific, AI/agent-specific, or new to this domain.
+- **After finishing a new feature/task, run the full check suite** (`uv run pytest`, `uv run ruff check .`, `uv run ruff format --check .`) and confirm it's clean before moving on to the next one.
 
 ## Commands
 
-No build, lint, test, or run tooling exists yet. The only runnable file is:
-
 ```bash
-.venv/bin/python hello.py
+uv sync                        # install/update dependencies into .venv
+uv run career-copilot --help   # run the CLI
+uv run career-copilot discover # run a subcommand
+uv run pytest                  # run the test suite
+uv run ruff check .            # lint
+uv run ruff format .           # auto-format (drop --check to actually rewrite)
 ```
-
-As dependency management (e.g. `requirements.txt`/`pyproject.toml`), a test runner (e.g. `pytest`), and linting/formatting tools (e.g. `ruff`, `black`) are introduced, document the actual commands here — do not invent commands that aren't wired up yet.
