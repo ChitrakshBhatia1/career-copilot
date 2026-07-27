@@ -67,3 +67,16 @@ A log of significant technical decisions made on Career Copilot: what was decide
 **Rationale:** `boards-api.greenhouse.io/v1/boards/{token}/jobs` requires no authentication, returns a simple, fully-documented-by-observation JSON shape (`{"jobs": [...], "meta": {...}}`, no pagination), and both companies were confirmed live during implementation to actually return real, current listings (Stripe currently has a live "Software Engineer, Intern" Bengaluru posting matching the keyword filter; Anthropic currently returns zero intern/2027 matches, which is an expected empty-result state, not a bug).
 
 **Trade-offs accepted:** hardcoded to exactly these two companies/board tokens for now — no config file or dynamic source list yet (that's implicitly deferred to whenever sources need to become user-configurable, not explicitly scheduled); Lever's slightly different JSON shape is untested by this implementation.
+
+---
+
+## 2026-07-27 — SQLite access: raw stdlib `sqlite3`, with a repository-function pattern
+
+**Decision:** Use the standard library's `sqlite3` module for persistence, with all SQL isolated in a single new module (`db.py`) exposing repository-style functions (`init_db()`, `save_new_listings()`) rather than raw SQL scattered across call sites.
+
+**Alternatives considered:**
+- A thin wrapper library (e.g. `sqlite-utils`) — nicer ergonomics (dict-based inserts, automatic schema management) at the cost of a new dependency.
+
+**Rationale:** consistent with this project's stdlib-first bias (mirrors the `argparse` and `logging` decisions from M0) — `sqlite3` is fully sufficient for a single-table, single-process CLI tool with no concurrent writers, and isolating all SQL in one module keeps the option open to swap in a wrapper or a different backend later without touching call sites elsewhere.
+
+**Trade-offs accepted:** more verbose than a wrapper would be (raw SQL strings, manual cursor/rowcount handling for detecting which rows were newly inserted); no automatic migrations — schema changes will need to be hand-written as the table evolves (e.g. when M3 adds a `score` column, if that's how matching gets wired in).
