@@ -94,3 +94,17 @@ A log of significant technical decisions made on Career Copilot: what was decide
 **Rationale:** `tomllib` is stdlib as of Python 3.11 (read-only, which is fine since this file is hand-edited by the user, not written by the program) — consistent with this project's stdlib-first bias already established for `argparse`, `logging`, and `sqlite3`; TOML's table syntax (`[role]`, `[location]`, `[exclude]`) also maps cleanly onto the three preference categories (keywords/location/exclusions) without extra nesting. The scoring rule itself (keyword-count + location bonus, hard-excluding any seniority-keyword match) was kept intentionally simple/flat per the roadmap's "explainable in one sentence" requirement, rather than building a weighted multi-factor model.
 
 **Trade-offs accepted:** no write support from `tomllib` (fine today since nothing edits this file programmatically, but would need a third-party TOML writer or a format switch if that ever changes); the scoring model doesn't (yet) account for job-description content, real date ranges, or visa sponsorship — see the CLAUDE.md note below.
+
+---
+
+## 2026-07-27 — Notification channel: Discord webhook; `.env` loading via a minimal stdlib-only loader (not `python-dotenv`)
+
+**Decision:** Send the daily notification as a Discord webhook POST (`notify.py`), with the webhook URL read from a `DISCORD_WEBHOOK_URL` environment variable loaded via a new minimal stdlib-only `.env` loader (`env.py`) rather than `python-dotenv`.
+
+**Alternatives considered:**
+- Notification channel: Slack webhook (equally simple, Discord preferred by the user), Telegram bot (needs two secrets — bot token + chat ID — instead of one), email via `smtplib` (needs SMTP host/port + an app-specific password, meaningfully more setup).
+- `.env` loading: `python-dotenv` — the standard, more feature-complete third-party library for this.
+
+**Rationale:** a Discord webhook needs exactly one secret (the URL) and no bot process to host or maintain, matching this project's bias toward the simplest thing that satisfies "runs unattended every morning." The `.env` loader was kept to ~15 lines of stdlib `os`/`Path` code rather than adding `python-dotenv`, consistent with every prior dependency decision in this project (only `httpx` has been added as an actual new dependency across all four milestones) — `setdefault` semantics mean real shell-exported env vars (e.g. from a cron job's environment) still win over the file.
+
+**Trade-offs accepted:** switching channels later (e.g. to email) means writing a new `notify.py` implementation rather than reconfiguring an existing one — no abstraction over "notification channel" was built since only one was ever needed for the MVP; the custom `.env` loader doesn't handle quoted values, multiline values, or variable interpolation the way `python-dotenv` does, which is fine for a single `DISCORD_WEBHOOK_URL=...` line but would need revisiting if `.env` usage grows more complex.
