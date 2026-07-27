@@ -1,0 +1,57 @@
+<!--
+Trimmed excerpt of real Microsoft careers search-results HTML
+(apply.careers.microsoft.com/careers?query=Software+Engineer+Intern),
+captured during the M8 spike and cut down to 3 `div.cardContainer-GcY1a`
+cards: two structurally normal cards (real title/location/posted-date text,
+trimmed of unrelated svg/style noise), and one deliberately broken card
+(missing `.title-1aNJK` entirely) to exercise the parser's "skip one bad
+card, keep going" behavior.
+-->
+<html>
+<body>
+<div class="jobListSection-3ExzH">
+
+<div class="cardContainer-GcY1a" data-test-id="job-listing">
+  <a class="r-link card-F1ebU" href="/careers/job/1970393556939573" role="button" target="_blank">
+    <div class="stack-module_stack__LqslD">
+      <div class="title-1aNJK">Software Engineer II &amp; Senior Software Engineer</div>
+      <div class="fieldsContainer-3Jtts">
+        <div class="fieldValue-3kEar">United States, Washington, Redmond</div>
+      </div>
+      <div class="subData-13Lm1">Posted 7 days ago</div>
+    </div>
+  </a>
+  <button aria-label="Save Software Engineer II" data-testid="save-button"></button>
+</div>
+
+<div class="cardContainer-GcY1a" data-test-id="job-listing">
+  <a class="r-link card-F1ebU" href="/careers/job/1970393556922652" role="button" target="_blank">
+    <div class="stack-module_stack__LqslD">
+      <div class="title-1aNJK">Software Engineer / Senior Software Engineer - .NET Libraries</div>
+      <div class="fieldsContainer-3Jtts">
+        <div class="fieldValue-3kEar">Czech Republic, Prague, Prague</div>
+      </div>
+      <div class="subData-13Lm1">Posted an hour ago</div>
+    </div>
+  </a>
+  <button aria-label="Save Software Engineer" data-testid="save-button"></button>
+</div>
+
+<!-- Deliberately broken card: no `.title-1aNJK` element at all, simulating
+     the kind of structural inconsistency real-world HTML is expected to
+     have. Parser must skip this card (logged) without crashing the rest of
+     the parse. -->
+<div class="cardContainer-GcY1a" data-test-id="job-listing">
+  <a class="r-link card-F1ebU" href="/careers/job/9999999" role="button" target="_blank">
+    <div class="stack-module_stack__LqslD">
+      <div class="fieldsContainer-3Jtts">
+        <div class="fieldValue-3kEar">Nowhere</div>
+      </div>
+      <div class="subData-13Lm1">Posted an hour ago</div>
+    </div>
+  </a>
+</div>
+
+</div>
+</body>
+</html>

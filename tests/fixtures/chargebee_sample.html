@@ -1,0 +1,85 @@
+<!--
+Trimmed excerpt of real rendered HTML from jobs.chargebee.com/search/ (the
+SAP SuccessFactors-backed job board at a subdomain distinct from the
+chargebee.com/careers/ marketing page M7 found linking only to LinkedIn --
+this subdomain is a genuine, separate ATS with real listings), captured
+during the M8 spike and cut down to 3 `tr.data-row` rows: two structurally
+normal rows (real title/location/team text) and one deliberately broken row
+(missing `a.jobTitle-link` entirely) to exercise the parser's "skip one bad
+row, keep going" behavior.
+-->
+<html>
+<body>
+<table id="searchresults" class="searchResults full table table-striped table-hover">
+    <thead>
+        <tr id="search-results-header">
+            <th id="hdrTitle">Title</th>
+            <th id="hdrLocation">Location</th>
+            <th id="hdrFacility">Teams</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr class="data-row">
+            <td class="colTitle" headers="hdrTitle">
+                <span class="jobTitle hidden-phone">
+                    <a href="/job/Remote-Account-Executive-1-Enterprise/56776344/" class="jobTitle-link">Account Executive 1 - Enterprise</a>
+                </span>
+                <div class="jobdetail-phone visible-phone">
+                    <span class="jobTitle visible-phone">
+                        <a class="jobTitle-link" href="/job/Remote-Account-Executive-1-Enterprise/56776344/">Account Executive 1 - Enterprise</a>
+                    </span>
+                    <span class="jobLocation visible-phone">
+                        <span class="jobLocation">Remote, US</span>
+                    </span>
+                    <span class="jobFacility visible-phone">Sales - AE</span>
+                </div>
+            </td>
+            <td class="colLocation hidden-phone" headers="hdrLocation">
+                <span class="jobLocation">
+                    Remote, US
+                </span>
+            </td>
+            <td class="colFacility hidden-phone" headers="hdrFacility">
+                <span class="jobFacility">Sales - AE</span>
+            </td>
+            <td class="hidden-phone"></td>
+        </tr>
+        <tr class="data-row">
+            <td class="colTitle" headers="hdrTitle">
+                <span class="jobTitle hidden-phone">
+                    <a href="/job/Chennai-India-Enterprise-Technical-Consultant/33449644/" class="jobTitle-link">Enterprise Technical Consultant</a>
+                </span>
+                <div class="jobdetail-phone visible-phone">
+                    <span class="jobTitle visible-phone">
+                        <a class="jobTitle-link" href="/job/Chennai-India-Enterprise-Technical-Consultant/33449644/">Enterprise Technical Consultant</a>
+                    </span>
+                    <span class="jobLocation visible-phone">
+                        <span class="jobLocation">Chennai, India</span>
+                    </span>
+                    <span class="jobFacility visible-phone">Customer Solutions</span>
+                </div>
+            </td>
+            <td class="colLocation hidden-phone" headers="hdrLocation">
+                <span class="jobLocation">
+                    Chennai, India
+                </span>
+            </td>
+            <td class="colFacility hidden-phone" headers="hdrFacility">
+                <span class="jobFacility">Customer Solutions</span>
+            </td>
+            <td class="hidden-phone"></td>
+        </tr>
+        <tr class="data-row">
+            <!-- Deliberately broken: no colTitle/a.jobTitle-link at all. -->
+            <td class="colLocation hidden-phone" headers="hdrLocation">
+                <span class="jobLocation">Mystery Location</span>
+            </td>
+            <td class="colFacility hidden-phone" headers="hdrFacility">
+                <span class="jobFacility">Mystery Team</span>
+            </td>
+            <td class="hidden-phone"></td>
+        </tr>
+    </tbody>
+</table>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!--
+Trimmed excerpt of real Unstop search-page HTML (unstop.com/internships,
+captured after wait_until="networkidle" during the M8 spike -- the page is a
+client-side rendered Angular SPA, so listing cards only exist in the DOM
+once its post-load XHR resolves), cut down to 3 `a[itemprop="itemListElement"]`
+cards: two structurally normal cards (real title/company/location/skill-tag
+text, trimmed of unrelated icon/style noise), and one deliberately broken
+card (missing `p.single-wrap` entirely, i.e. no company name) to exercise
+the parser's "skip one bad card, keep going" behavior.
+-->
+<html>
+<body>
+<div class="card-container">
+
+<app-competition-listing class="ng-star-inserted">
+<a itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem"
+   class="item opp_1726361 position-relative" id="i_1726361_1"
+   href="/internships/business-development-internship-nexaris-1726361" target="_blank">
+  <meta itemprop="position" content="11">
+  <meta itemprop="url" content="https://unstop.com/internships/business-development-internship-nexaris-1726361">
+  <div class="j-between-start">
+    <div class="cptn">
+      <div><h3 itemprop="name" class="double-wrap"> Business Development Internship </h3></div>
+      <p class="single-wrap ng-star-inserted">Nexaris</p>
+      <div class="other_fields align-center">
+        <span>No prior experience required</span>
+        <span class="single-wrap job_location">In Office |  Ahmedabad, Mumbai</span>
+      </div>
+    </div>
+    <div class="skill_list j-between ng-star-inserted">
+      <span class="chip_text">Negotiation</span>
+      <span class="chip_text">B2B Sales</span>
+      <span class="chip_text">Business development</span>
+    </div>
+  </div>
+</a>
+</app-competition-listing>
+
+<app-competition-listing class="ng-star-inserted">
+<a itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem"
+   class="item opp_1726426 position-relative" id="i_1726426_1"
+   href="/internships/hr-internship-ilp-overseas-1726426" target="_blank">
+  <meta itemprop="position" content="1">
+  <meta itemprop="url" content="https://unstop.com/internships/hr-internship-ilp-overseas-1726426">
+  <div class="j-between-start">
+    <div class="cptn">
+      <div><h3 itemprop="name" class="double-wrap"> HR Internship </h3></div>
+      <p class="single-wrap ng-star-inserted">ILP Overseas</p>
+      <div class="other_fields align-center">
+        <span class="single-wrap job_location">Work from Home</span>
+      </div>
+    </div>
+    <div class="skill_list j-between ng-star-inserted">
+      <span class="chip_text">Talent Acquisition</span>
+      <span class="chip_text">Human Resources (HR)</span>
+      <span class="chip_text">Undergraduate</span>
+    </div>
+  </div>
+</a>
+</app-competition-listing>
+
+<!-- Deliberately broken card: no `p.single-wrap` element at all, simulating
+     the kind of structural inconsistency real-world HTML across ~20
+     different postings is expected to have. Parser must skip this card
+     (logged) without crashing the rest of the parse. -->
+<app-competition-listing class="ng-star-inserted">
+<a itemprop="itemListElement" itemscope="" itemtype="https://schema.org/ListItem"
+   class="item opp_9999999 position-relative" id="i_9999999_1"
+   href="/internships/broken-card-internship-mystery-corp-9999999" target="_blank">
+  <meta itemprop="position" content="99">
+  <div class="j-between-start">
+    <div class="cptn">
+      <div><h3 itemprop="name" class="double-wrap"> Mystery Internship </h3></div>
+      <!-- no `p.single-wrap` here -->
+      <div class="other_fields align-center">
+        <span class="single-wrap job_location">Nowhere</span>
+      </div>
+    </div>
+    <div class="skill_list j-between ng-star-inserted">
+      <span class="chip_text">Mystery Skill</span>
+    </div>
+  </div>
+</a>
+</app-competition-listing>
+
+</div>
+</body>
+</html>

@@ -116,3 +116,137 @@ tier = 2
 adapter = "playwright"
 url = "https://internshala.com/internships/"
 parser = "internshala"
+
+[[source]]
+name = "Unstop"
+tier = 2
+adapter = "playwright"
+url = "https://unstop.com/internships"
+parser = "unstop"
+# Unstop's listings render client-side (Angular SPA) -- confirmed via a live
+# spike that zero cards exist in the DOM at the default
+# `wait_until="domcontentloaded"`, so this source overrides it to wait for
+# the page's network activity to settle before capturing HTML.
+wait_until = "networkidle"
+
+[[source]]
+name = "Chargebee"
+tier = 1
+adapter = "playwright"
+# NOT chargebee.com/careers/ (the marketing page, which only links out to
+# LinkedIn per M7's research) -- jobs.chargebee.com is a separate
+# subdomain running a real SAP SuccessFactors career site with its own
+# listings, confirmed via a live spike. The listing table is already
+# present server-side at `wait_until="domcontentloaded"`.
+url = "https://jobs.chargebee.com/search/"
+parser = "chargebee"
+
+# --- M8: Google/Microsoft/Amazon/Apple/Meta -----------------------------
+# All 5 confirmed in M7's research to have no usable structured JSON API
+# (proprietary in-house ATS platforms) -- Playwright-rendered instead.
+# tier = 1 since these are Tier-1 companies, just needing a real browser
+# instead of a REST API.
+
+[[source]]
+name = "Google"
+tier = 1
+adapter = "playwright"
+# The `.../applications/` root, not `.../jobs/results` directly -- confirmed
+# via a live spike that listings are already present server-side at
+# `wait_until="domcontentloaded"` (same as Internshala), no override needed.
+url = "https://www.google.com/about/careers/applications/jobs/results?q=software+engineer+intern"
+parser = "google"
+
+[[source]]
+name = "Microsoft"
+tier = 1
+adapter = "playwright"
+# NOT careers.microsoft.com or jobs.careers.microsoft.com -- both redirect
+# here, and the first hop's redirect chain drops any `?query=` string along
+# the way (confirmed via `curl -sIL`), so the search must target
+# apply.careers.microsoft.com directly. Listings load via a client-side XHR
+# -- confirmed via a live spike that zero cards exist at
+# `wait_until="domcontentloaded"`, so this overrides to "networkidle".
+url = "https://apply.careers.microsoft.com/careers?query=Software+Engineer+Intern"
+parser = "microsoft"
+wait_until = "networkidle"
+
+[[source]]
+name = "Amazon"
+tier = 1
+adapter = "playwright"
+# Listings load via a client-side XHR -- confirmed via a live spike that
+# zero cards exist at `wait_until="domcontentloaded"`, so this overrides to
+# "networkidle".
+url = "https://www.amazon.jobs/en/search?base_query=software+engineer+intern"
+parser = "amazon"
+wait_until = "networkidle"
+
+[[source]]
+name = "Apple"
+tier = 1
+adapter = "playwright"
+# `&sort=relevance` is required -- confirmed via a live spike that
+# `?search=...` alone is silently ignored and renders the generic
+# unfiltered listing instead. Listings are present server-side at
+# `wait_until="domcontentloaded"` (same as Internshala/Google), no override
+# needed.
+url = "https://jobs.apple.com/en-us/search?search=Software+Engineer+Intern&sort=relevance"
+parser = "apple"
+
+[[source]]
+name = "Meta"
+tier = 1
+adapter = "playwright"
+# Listings load via a client-side XHR -- confirmed via a live spike that
+# zero cards exist at `wait_until="domcontentloaded"`, so this overrides to
+# "networkidle". Meta's own markup has no usable semantic class names at
+# all (see `parsers/meta.py`'s docstring) -- the parser selects structurally
+# instead, but the fetch-side fix here is the same as Microsoft/Amazon.
+#
+# Known flaky in practice: the initial spike successfully extracted 10 real
+# listings this way, but repeated requests from the same session/IP shortly
+# after consistently returned an empty shell (no `job_details` cards in the
+# DOM even with `networkidle` and a spoofed desktop user agent) -- looks
+# like rate-limiting/bot-detection kicking in after a handful of automated
+# requests, not a fundamentally unparseable page. `PlaywrightAdapter`
+# already degrades this to an empty list + a logged error rather than
+# crashing `discover()`, so this source is left configured, but expect
+# lower and less consistent yield than Google/Microsoft/Amazon/Apple.
+url = "https://www.metacareers.com/jobs?q=software%20engineer%20intern"
+parser = "meta"
+wait_until = "networkidle"
+
+# The 4 companies below were budgeted into M8 as Playwright targets (M7's
+# research found no usable structured API for any of them). A live spike
+# during M8 found the opposite for 3 of the 4: Oracle, IBM, and Qualcomm all
+# turned out to have a real, directly-fetchable, unauthenticated JSON API of
+# their own -- no browser rendering needed at all. Only Zerodha's own
+# in-house API is genuinely empty right now (confirmed live: the site itself
+# says "There are no job openings currently."), not blocked or broken. See
+# each adapter module's docstring (`oracle_fusion.py`, `ibm_careers.py`,
+# `qualcomm_eightfold.py`, `zerodha.py`) for the full live-spike evidence.
+
+[[source]]
+name = "Oracle"
+tier = 1
+adapter = "oracle-fusion"
+api_base_url = "https://eeho.fa.us2.oraclecloud.com"
+site_number = "CX_45001"
+public_url_base = "https://careers.oracle.com/en/sites/jobsearch"
+
+[[source]]
+name = "IBM"
+tier = 1
+adapter = "ibm-careers"
+
+[[source]]
+name = "Qualcomm"
+tier = 1
+adapter = "eightfold"
+domain = "qualcomm.com"
+
+[[source]]
+name = "Zerodha"
+tier = 1
+adapter = "zerodha-api"

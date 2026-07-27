@@ -13,13 +13,17 @@ from pathlib import Path
 from career_copilot.discovery.base import SourceAdapter
 from career_copilot.discovery.filtering import matches_keywords
 from career_copilot.discovery.greenhouse import GreenhouseAdapter
+from career_copilot.discovery.ibm_careers import IBMCareersAdapter
 from career_copilot.discovery.icims import ICIMSAdapter
 from career_copilot.discovery.lever import LeverAdapter
 from career_copilot.discovery.models import Listing
+from career_copilot.discovery.oracle_fusion import OracleFusionAdapter
 from career_copilot.discovery.parsers import PARSERS
 from career_copilot.discovery.playwright_adapter import PlaywrightAdapter
+from career_copilot.discovery.qualcomm_eightfold import QualcommEightfoldAdapter
 from career_copilot.discovery.smartrecruiters import SmartRecruitersAdapter
 from career_copilot.discovery.workday import WorkdayAdapter
+from career_copilot.discovery.zerodha import ZerodhaAdapter
 
 logger = logging.getLogger(__name__)
 
@@ -56,6 +60,27 @@ def _build_icims(entry: dict) -> SourceAdapter:
     return ICIMSAdapter(company=entry["name"])
 
 
+def _build_oracle_fusion(entry: dict) -> SourceAdapter:
+    return OracleFusionAdapter(
+        company=entry["name"],
+        api_base_url=entry["api_base_url"],
+        site_number=entry["site_number"],
+        public_url_base=entry["public_url_base"],
+    )
+
+
+def _build_ibm_careers(entry: dict) -> SourceAdapter:
+    return IBMCareersAdapter(company=entry["name"])
+
+
+def _build_qualcomm_eightfold(entry: dict) -> SourceAdapter:
+    return QualcommEightfoldAdapter(company=entry["name"], domain=entry["domain"])
+
+
+def _build_zerodha(entry: dict) -> SourceAdapter:
+    return ZerodhaAdapter(company=entry["name"])
+
+
 def _build_playwright(entry: dict) -> SourceAdapter:
     # `entry["parser"]` looks up the pure `parse_x(html) -> list[Listing]`
     # function to pair with the fetch -- both this lookup and `entry["url"]`
@@ -63,7 +88,16 @@ def _build_playwright(entry: dict) -> SourceAdapter:
     # way `_build_adapter()` already handles every other adapter's missing
     # required fields.
     parser = PARSERS[entry["parser"]]
-    return PlaywrightAdapter(name=entry["name"], url=entry["url"], parser=parser)
+    # `wait_until` is optional -- absent for sources like Internshala whose
+    # listings are already present at `domcontentloaded`; sources that render
+    # client-side (e.g. Unstop's Angular SPA) set it explicitly to
+    # `"networkidle"` in `sources.toml`.
+    return PlaywrightAdapter(
+        name=entry["name"],
+        url=entry["url"],
+        parser=parser,
+        wait_until=entry.get("wait_until", "domcontentloaded"),
+    )
 
 
 _ADAPTER_BUILDERS: dict[str, Callable[[dict], SourceAdapter]] = {
@@ -73,6 +107,10 @@ _ADAPTER_BUILDERS: dict[str, Callable[[dict], SourceAdapter]] = {
     "workday": _build_workday,
     "icims": _build_icims,
     "playwright": _build_playwright,
+    "oracle-fusion": _build_oracle_fusion,
+    "ibm-careers": _build_ibm_careers,
+    "eightfold": _build_qualcomm_eightfold,
+    "zerodha-api": _build_zerodha,
 }
 
 

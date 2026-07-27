@@ -1,0 +1,58 @@
+<!--
+Trimmed excerpt of real Apple Jobs search-results HTML
+(jobs.apple.com/en-us/search?search=Software+Engineer+Intern&sort=relevance),
+captured during the M8 spike and cut down to 3 `div.job-list-item.job-title`
+cards: two structurally normal cards (real title/team/location/posted-date
+text), and one deliberately broken card (missing the `<h3><a>` title link
+entirely) to exercise the parser's "skip one bad card, keep going" behavior.
+-->
+<html>
+<body>
+<div class="table--advanced-search">
+
+<div class="d-flex flex-row row large-12 job-title job-list-item" id="search-search-job-title-200672467-3543-2">
+  <div class="d-flex flex-column column large-6 small-12 text-align-start job-title-link pr-40 w-51">
+    <h3><a aria-label="Sr. Software Engineering Manager, Internal Tools 200672467"
+           class="link-inline t-intro word-wrap-break-word more"
+           href="/en-us/details/200672467-3543/sr-software-engineering-manager-internal-tools?team=SFTWR">Sr. Software Engineering Manager, Internal Tools</a></h3>
+    <span class="team-name mt-0">Software and Services</span>
+    <span class="job-posted-date">Jul 15, 2026</span>
+  </div>
+  <div class="column large-4 small-12 text-align-start job-title-location">
+    <span class="a11y">Location</span>
+    <span id="search-store-name-container-2">San Diego</span>
+  </div>
+</div>
+
+<div class="d-flex flex-row row large-12 job-title job-list-item" id="search-search-job-title-200670275-3715-2">
+  <div class="d-flex flex-column column large-6 small-12 text-align-start job-title-link pr-40 w-51">
+    <h3><a aria-label="Mac Product Design Intern 200670275"
+           class="link-inline t-intro word-wrap-break-word more"
+           href="/en-us/details/200670275-3715/mac-product-design-intern?team=HRDWR">Mac Product Design Intern</a></h3>
+    <span class="team-name mt-0">Hardware</span>
+    <span class="job-posted-date">Jul 02, 2026</span>
+  </div>
+  <div class="column large-4 small-12 text-align-start job-title-location">
+    <span class="a11y">Location</span>
+    <span id="search-store-name-container-3">Shanghai</span>
+  </div>
+</div>
+
+<!-- Deliberately broken card: no `<h3><a>` title link at all, simulating
+     the kind of structural inconsistency real-world HTML is expected to
+     have. Parser must skip this card (logged) without crashing the rest of
+     the parse. -->
+<div class="d-flex flex-row row large-12 job-title job-list-item" id="search-search-job-title-9999999-2">
+  <div class="d-flex flex-column column large-6 small-12 text-align-start job-title-link pr-40 w-51">
+    <span class="team-name mt-0">Mystery Team</span>
+    <span class="job-posted-date">Jan 01, 2026</span>
+  </div>
+  <div class="column large-4 small-12 text-align-start job-title-location">
+    <span class="a11y">Location</span>
+    <span id="search-store-name-container-9999999">Nowhere</span>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

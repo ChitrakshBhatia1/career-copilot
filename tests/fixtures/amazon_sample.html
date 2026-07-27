@@ -1,0 +1,108 @@
+<!--
+Trimmed excerpt of real Amazon Jobs search-results HTML
+(amazon.jobs/en/search?base_query=software+engineer+intern), captured
+during the M8 spike and cut down to 3 `div.job-tile` cards: two structurally
+normal cards (real title/location/posted-date/qualifications text), and one
+deliberately broken card (missing the `div.job` wrapper's `data-job-id`
+entirely) to exercise the parser's "skip one bad card, keep going" behavior.
+-->
+<html>
+<body>
+<div class="job-tile-lists col-12 mt-3 mt-md-0">
+
+<div class="job-tile">
+  <div class="job" data-job-id="10418355">
+    <div class="row">
+      <div class="info first col-12 col-md-8">
+        <h3 class="job-title">
+          <a class="job-link" href="/en/jobs/10418355/2027-software-dev-engineer-intern">2027 Software Dev Engineer Intern</a>
+        </h3>
+        <div class="location-and-id d-inline-flex flex-row flex-wrap">
+          <span class="d-inline-flex flex-row flex-wrap mr-1">
+            <legend class="d-none">Locations</legend>
+            <ul class="list-unstyled m-0 d-inline-flex flex-row flex-wrap">
+              <li class="text-nowrap">Dublin, IRL</li>
+              <li>|</li>
+              <li>Job ID: 10418355</li>
+            </ul>
+          </span>
+        </div>
+      </div>
+      <div class="info col-12 col-md-4">
+        <span class="posting-date">Posted May 13, 2026</span>
+        <p class="meta time-elapsed">(Updated 28 days ago)</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="description col-12">
+        <div class="qualifications-preview">
+          Basic qualifications:<br/>
+          <ul>
+            <li>Are enrolled in a Bachelor's degree or above in Computer Science, Computer Engineering, or related fields at time of application</li>
+            <li>Knowledge of programming languages such as C/C++, Python, Java or Perl</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="job-tile">
+  <div class="job" data-job-id="10377042">
+    <div class="row">
+      <div class="info first col-12 col-md-8">
+        <h3 class="job-title">
+          <a class="job-link" href="/en/jobs/10377042/seed-engineer-program-software-development-engineer-intern-2026-shenzhen">SEED Engineer Program - Software Development Engineer Intern, 2026 Shenzhen</a>
+        </h3>
+        <div class="location-and-id d-inline-flex flex-row flex-wrap">
+          <span class="d-inline-flex flex-row flex-wrap mr-1">
+            <legend class="d-none">Locations</legend>
+            <ul class="list-unstyled m-0 d-inline-flex flex-row flex-wrap">
+              <li class="text-nowrap">Shenzhen, CHN</li>
+              <li>|</li>
+              <li>Job ID: 10377042</li>
+            </ul>
+          </span>
+        </div>
+      </div>
+      <div class="info col-12 col-md-4">
+        <span class="posting-date">Posted March 26, 2026</span>
+        <p class="meta time-elapsed">(Updated 4 months ago)</p>
+      </div>
+    </div>
+    <div class="row">
+      <div class="description col-12">
+        <div class="qualifications-preview">
+          Basic qualifications:<br/>
+          <ul>
+            <li>Upcoming 3rd year college students with target graduation date in 2028.</li>
+            <li>Fluency in programming of languages such as C/C++ or Java.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deliberately broken card: the inner `div.job` has no `data-job-id`
+     attribute at all, simulating the kind of structural inconsistency
+     real-world HTML is expected to have. Parser must skip this card
+     (logged) without crashing the rest of the parse. -->
+<div class="job-tile">
+  <div class="job">
+    <div class="row">
+      <div class="info first col-12 col-md-8">
+        <h3 class="job-title">
+          <a class="job-link" href="/en/jobs/9999999/mystery-role">Mystery Role</a>
+        </h3>
+      </div>
+      <div class="info col-12 col-md-4">
+        <span class="posting-date">Posted January 1, 2026</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

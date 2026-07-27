@@ -27,16 +27,28 @@ class PlaywrightAdapter:
     `parse_internshala`) -- this class owns none of the site-specific
     extraction logic itself, only the fetch-then-parse composition and
     error handling.
+
+    `wait_until` defaults to `"domcontentloaded"` (Internshala's proven
+    behavior, unchanged) but can be overridden per-source -- e.g. Unstop
+    needs `"networkidle"` since its listings only exist in the DOM after its
+    Angular SPA finishes a client-side data fetch.
     """
 
-    def __init__(self, name: str, url: str, parser: Callable[[str], list[Listing]]) -> None:
+    def __init__(
+        self,
+        name: str,
+        url: str,
+        parser: Callable[[str], list[Listing]],
+        wait_until: str = "domcontentloaded",
+    ) -> None:
         self.name = name
         self.url = url
         self.parser = parser
+        self.wait_until = wait_until
 
     def fetch(self) -> list[Listing]:
         try:
-            html = fetch_rendered_html(self.url)
+            html = fetch_rendered_html(self.url, wait_until=self.wait_until)
         except PlaywrightError as exc:
             # Covers both a plain navigation failure and
             # `playwright.sync_api.TimeoutError` (a subclass of `Error`).

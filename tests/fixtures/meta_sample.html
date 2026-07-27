@@ -1,0 +1,55 @@
+<!--
+Trimmed excerpt of real Meta Careers search-results HTML
+(metacareers.com/jobs?q=software+engineer+intern), captured during the M8
+spike and cut down to 3 `a[href*="/profile/job_details/"]` cards. Real
+class values are Meta's atomic/utility-hash CSS (meaningless, unstable) --
+replaced here with short placeholder tokens for readability since the
+parser never selects on them anyway (see `parsers/meta.py`'s docstring for
+why). Two structurally normal cards (real title/location text), and one
+deliberately broken card (missing the `<h3>` title entirely) to exercise
+the parser's "skip one bad card, keep going" behavior.
+-->
+<html>
+<body>
+<div class="x1n2onr6">
+
+<a class="x1i10hfl" href="/profile/job_details/2342974003201767" role="link" target="_blank">
+  <div class="xeuugli">
+    <div aria-hidden="true">
+      <h3 class="x1motxo8">Software Engineer, Databases</h3>
+      <div aria-label="Bookmark this job" class="x1i10hfl" role="button"></div>
+    </div>
+  </div>
+  <div class="xeuugli">
+    <span class="x19a1ety">Bellevue, WA +1 locations</span>
+    <span class="x19a1ety">⋅</span>
+    <span class="x19a1ety">Infrastructure</span>
+  </div>
+</a>
+
+<a class="x1i10hfl" href="/profile/job_details/1346912293520753" role="link" target="_blank">
+  <div class="xeuugli">
+    <div aria-hidden="true">
+      <h3 class="x1motxo8">Software Engineer, Sensors &amp; Computer Vision</h3>
+    </div>
+  </div>
+  <div class="xeuugli">
+    <span class="x19a1ety">Sunnyvale, CA</span>
+    <span class="x19a1ety">⋅</span>
+    <span class="x19a1ety">AR/VR +5 more</span>
+  </div>
+</a>
+
+<!-- Deliberately broken card: no `<h3>` title at all, simulating the kind
+     of structural inconsistency real-world HTML is expected to have.
+     Parser must skip this card (logged) without crashing the rest of the
+     parse. -->
+<a class="x1i10hfl" href="/profile/job_details/9999999" role="link" target="_blank">
+  <div class="xeuugli">
+    <span class="x19a1ety">Nowhere</span>
+  </div>
+</a>
+
+</div>
+</body>
+</html>

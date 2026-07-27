@@ -36,7 +36,7 @@ def _fake_parser(html: str) -> list[Listing]:
 def test_fetch_returns_parsed_listings_on_success(monkeypatch):
     monkeypatch.setattr(
         "career_copilot.discovery.playwright_adapter.fetch_rendered_html",
-        lambda url: "<html></html>",
+        lambda url, **kwargs: "<html></html>",
     )
     adapter = PlaywrightAdapter(name="FakeSource", url="https://example.com", parser=_fake_parser)
 
@@ -46,7 +46,7 @@ def test_fetch_returns_parsed_listings_on_success(monkeypatch):
 
 
 def test_fetch_returns_empty_list_when_fetch_rendered_html_raises_timeout(monkeypatch, caplog):
-    def _raise_timeout(url: str) -> str:
+    def _raise_timeout(url: str, **kwargs) -> str:
         raise PlaywrightTimeoutError("Timeout 20000ms exceeded")
 
     monkeypatch.setattr(
@@ -64,7 +64,7 @@ def test_fetch_returns_empty_list_when_fetch_rendered_html_raises_timeout(monkey
 def test_fetch_returns_empty_list_when_fetch_rendered_html_raises_generic_playwright_error(
     monkeypatch, caplog
 ):
-    def _raise_error(url: str) -> str:
+    def _raise_error(url: str, **kwargs) -> str:
         raise PlaywrightError("Navigation failed")
 
     monkeypatch.setattr(
@@ -82,7 +82,7 @@ def test_fetch_returns_empty_list_when_fetch_rendered_html_raises_generic_playwr
 def test_fetch_returns_empty_list_when_parser_raises(monkeypatch, caplog):
     monkeypatch.setattr(
         "career_copilot.discovery.playwright_adapter.fetch_rendered_html",
-        lambda url: "<html></html>",
+        lambda url, **kwargs: "<html></html>",
     )
 
     def _broken_parser(html: str) -> list[Listing]:

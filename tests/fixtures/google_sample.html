@@ -1,0 +1,101 @@
+<!--
+Trimmed excerpt of real Google careers search-results HTML
+(google.com/about/careers/applications/jobs/results?q=software+engineer+intern),
+captured during the M8 spike and cut down to 3 `li.lLd3Je` cards: two
+structurally normal cards (real title/location/qualifications text, trimmed
+of unrelated jsaction/jscontroller noise), and one deliberately broken card
+(missing `h3.QJPWVe` entirely) to exercise the parser's "skip one bad card,
+keep going" behavior.
+-->
+<html>
+<body>
+<div class="cd0Zwd">
+
+<li class="lLd3Je" ssk="17:95141459539174086">
+  <div class="Ln1EL">
+    <div class="sMn82b">
+      <div class="ObfsIf-oKdM2c">
+        <div class="ObfsIf-eEDwDf">
+          <h3 class="QJPWVe">Software Engineering Intern, MS, Summer 2027</h3>
+        </div>
+      </div>
+      <div class="wVoYLb">
+        <div class="op1BBf">
+          <span class="RP7SMd"><i class="google-material-icons">corporate_fare</i><span>Google</span></span>
+          <span class="pwO9Dc vo5qdf">
+            <i class="google-material-icons">place</i>
+            <span class="r0wTof">Mountain View, CA, USA</span>
+            <span class="r0wTof p3oCrc">; Atlanta, GA, USA</span>
+            <span class="BVHzed">; +29 more</span>
+          </span>
+        </div>
+      </div>
+      <div class="Xsxa1e">
+        <h4>Minimum qualifications</h4>
+        <ul>
+          <li>Pursuing a Master's degree or post secondary or training experience with a focus on subjects in software development or other technical related fields.</li>
+          <li>Experience in Software Development and coding in two or more general purpose programming languages.</li>
+        </ul>
+      </div>
+      <div class="VfPpkd-dgl2Hf-ppHlrf-sM5MNb">
+        <a aria-label="Learn more about Software Engineering Intern, MS, Summer 2027"
+           href="jobs/results/95141459539174086-software-engineering-intern-ms-summer-2027?q=software+engineer+intern"></a>
+      </div>
+    </div>
+  </div>
+</li>
+
+<li class="lLd3Je" ssk="17:85564713261245126">
+  <div class="Ln1EL">
+    <div class="sMn82b">
+      <div class="ObfsIf-oKdM2c">
+        <div class="ObfsIf-eEDwDf">
+          <h3 class="QJPWVe">Software Engineering Intern, BS, Summer 2027</h3>
+        </div>
+      </div>
+      <div class="wVoYLb">
+        <div class="op1BBf">
+          <span class="RP7SMd"><i class="google-material-icons">corporate_fare</i><span>Google</span></span>
+          <span class="pwO9Dc vo5qdf">
+            <i class="google-material-icons">place</i>
+            <span class="r0wTof">Sunnyvale, CA, USA</span>
+          </span>
+        </div>
+      </div>
+      <div class="Xsxa1e">
+        <h4>Minimum qualifications</h4>
+        <ul>
+          <li>Pursuing a Bachelor's degree or post secondary or training experience with a focus on subjects in software development or other technical related fields.</li>
+        </ul>
+      </div>
+      <div class="VfPpkd-dgl2Hf-ppHlrf-sM5MNb">
+        <a aria-label="Learn more about Software Engineering Intern, BS, Summer 2027"
+           href="jobs/results/85564713261245126-software-engineering-intern-bs-summer-2027?q=software+engineer+intern"></a>
+      </div>
+    </div>
+  </div>
+</li>
+
+<!-- Deliberately broken card: no `h3.QJPWVe` element at all, simulating the
+     kind of structural inconsistency real-world HTML is expected to have.
+     Parser must skip this card (logged) without crashing the rest of the
+     parse. -->
+<li class="lLd3Je" ssk="17:99999999999999999">
+  <div class="Ln1EL">
+    <div class="sMn82b">
+      <div class="wVoYLb">
+        <div class="op1BBf">
+          <span class="pwO9Dc vo5qdf"><span class="r0wTof">Nowhere</span></span>
+        </div>
+      </div>
+      <div class="VfPpkd-dgl2Hf-ppHlrf-sM5MNb">
+        <a aria-label="Learn more about Mystery Role"
+           href="jobs/results/99999999999999999-mystery-role"></a>
+      </div>
+    </div>
+  </div>
+</li>
+
+</div>
+</body>
+</html>
