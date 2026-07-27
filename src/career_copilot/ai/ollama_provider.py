@@ -32,6 +32,7 @@ class OllamaProvider:
             "messages": [{"role": "user", "content": build_prompt(listing)}],
             "stream": False,
             "format": ANALYSIS_SCHEMA,
+            "options": {"temperature": 0},
         }
         try:
             response = httpx.post(

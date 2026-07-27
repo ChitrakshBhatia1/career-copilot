@@ -9,7 +9,7 @@ from career_copilot.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_ANALYZE_BATCH_SIZE = 40
+DEFAULT_ANALYZE_BATCH_SIZE = 20
 
 
 def build_parser() -> argparse.ArgumentParser:

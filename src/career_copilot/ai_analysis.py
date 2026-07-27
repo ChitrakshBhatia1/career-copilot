@@ -12,7 +12,10 @@ from career_copilot.discovery import Listing
 
 logger = logging.getLogger(__name__)
 
-DEFAULT_BATCH_SIZE = 40
+# A retry-on-parse-failure (below) means a batch can cost up to 2x its size
+# in requests worst-case, so this stays well under OpenRouter's 50/day free
+# cap even if every listing in the batch needs its retry.
+DEFAULT_BATCH_SIZE = 20
 
 
 def analyze_new_listings(
@@ -27,6 +30,12 @@ def analyze_new_listings(
     results: dict[str, AIAnalysis] = {}
     for listing in batch:
         analysis = provider.analyze_listing(listing)
+        if analysis is None:
+            # Free-tier models occasionally return malformed JSON (observed
+            # live: a corrupted field name on ~1 in 3 real requests to
+            # openai/gpt-oss-20b:free) -- one retry recovers most of these
+            # without meaningfully affecting the daily request budget.
+            analysis = provider.analyze_listing(listing)
         if analysis is not None:
             results[listing.url] = analysis
 

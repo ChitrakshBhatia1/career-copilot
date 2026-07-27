@@ -32,6 +32,7 @@ class OpenRouterProvider:
         payload = {
             "model": self.model,
             "messages": [{"role": "user", "content": build_prompt(listing)}],
+            "temperature": 0,
             "response_format": {
                 "type": "json_schema",
                 "json_schema": {

@@ -36,6 +36,7 @@ class AnthropicProvider:
         payload = {
             "model": self.model,
             "max_tokens": MAX_TOKENS,
+            "temperature": 0,
             "messages": [{"role": "user", "content": build_prompt(listing)}],
             "output_config": {
                 "format": {"type": "json_schema", "schema": ANALYSIS_SCHEMA},

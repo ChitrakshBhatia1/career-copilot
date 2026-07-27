@@ -40,6 +40,7 @@ class GeminiProvider:
         payload = {
             "contents": [{"parts": [{"text": build_prompt(listing)}]}],
             "generationConfig": {
+                "temperature": 0,
                 "responseMimeType": "application/json",
                 "responseSchema": _gemini_response_schema(),
             },
