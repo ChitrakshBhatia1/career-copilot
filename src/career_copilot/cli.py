@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from career_copilot import discovery
+from career_copilot import db, discovery
 from career_copilot.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -18,8 +18,16 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run_discover() -> None:
+    db.init_db()
     listings = discovery.discover()
-    for listing in listings:
+    new_listings = db.save_new_listings(listings)
+
+    logger.info("discover: %d new listings out of %d fetched", len(new_listings), len(listings))
+    if not new_listings:
+        logger.info("No new listings found.")
+        return
+
+    for listing in new_listings:
         print(f"{listing.title} — {listing.company} ({listing.location})\n  {listing.url}")
 
 
