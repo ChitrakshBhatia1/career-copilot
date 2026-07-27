@@ -195,3 +195,32 @@ Worth stating plainly rather than folding into "alternatives considered" below: 
 **Rationale:** the Oracle/IBM/Qualcomm/Zerodha reversal is the clearest evidence yet that M7's "no usable API" conclusions were a snapshot of what was found at the time, not a permanent fact about a site — the right response when a milestone's own spike work turns up new information is to update the plan, not follow it past the point it's known to be wrong. The `wait_until` extension is a deliberate, minimal generalization (new parameter, old default and all existing call sites unchanged) rather than a special case, so it's available for any future Playwright source with the same client-side-rendering behavior. Reporting the 6 negative findings honestly (each backed by a real, observed block or empty state — DataDome/Cloudflare/Akamai/AWS WAF challenges, or Flipkart's ATS reachable but genuinely empty, or Myntra's canvas-rendered Flutter app with no real DOM at all) continues the discipline M7 already set with iCIMS's "no usable API" stub rather than a guessed/fake implementation.
 
 **Trade-offs accepted:** 6 of the original 17 sites remain uncovered with no near-term fix — this project isn't going to build CAPTCHA/WAF evasion, so these are accepted gaps, not open bugs. Zerodha's API currently returns zero postings (a confirmed real empty state — its careers page says as much — not a parsing bug, but worth remembering if it silently starts returning results later without any code change on this end). Meta's Playwright scraper returned 10 real listings on its first live test but an empty result on repeated requests later in the same testing session, which looks like rate-limiting or bot-detection triggered by the automated testing itself rather than an unparseable page; it already degrades to an empty list per this project's established resilience pattern, but it's an unresolved watch item, not something this milestone fixed — future runs may see it flip between 0 and N results.
+
+---
+
+## 2026-07-27 — Tier-3 sources (LinkedIn/Naukri): interactive-only via a Claude Code skill, not automated code
+
+**Decision:** For LinkedIn and Naukri specifically, do not build an automated `SourceAdapter`. Instead, ship a Claude Code skill (`.claude/skills/linkedin-naukri-search/SKILL.md`) that drives the user's own logged-in Chrome session interactively (via `claude-in-chrome`), on-demand only, and a new `career-copilot import-listings <path.json>` CLI command the user runs themselves afterward to persist whatever the skill collected.
+
+**Alternatives considered:**
+- Headless Playwright automation with stored session cookies — the same approach used for M8's other sources — rejected specifically for these two, per the risk-tiering decision made before M5-M9 began, because both require a logged-in session and both have real anti-bot/ToS enforcement history (LinkedIn in particular has litigated scraping cases).
+- A fully automated `import` step that also calls `career-copilot import-listings` itself (e.g. from within the skill, or wired into `morning`) — rejected in favor of leaving that as a manual step the user runs themselves, keeping a deliberate human checkpoint between "data collected" and "data persisted."
+
+**Rationale:** a Claude Code skill is the right mechanism for something that must only ever run on-demand in an interactive session — unlike CLAUDE.md (always-loaded context) or actual application code (which `morning` could accidentally invoke), a skill is explicitly invoked, never accidentally scheduled. `import-listings` reuses the exact same `db.save_new_listings()` URL-dedup path as every other source, so Tier-3 listings integrate into `match`/`export-matches`/`morning`'s AI-analysis pass identically to automated ones once imported — the only difference is deliberately skipping `discovery.matches_keywords()` on the import path, since human curation during the interactive session already did that filtering.
+
+**Trade-offs accepted:** this path only produces new listings when the user actually runs an interactive session — there's no unattended LinkedIn/Naukri coverage in the daily `morning` digest, by design. The skill's quality depends on how well a future session follows its instructions (title/company/location/permalink-not-redirect-link extraction), which isn't unit-testable the way `parse_x()` functions are — `import-listings`'s own per-entry validation (required fields, string-type checks, skip-not-abort on malformed entries) is the only automated safety net on this path.
+
+---
+
+## 2026-07-27 — `export-matches`: shared ranking helper, top-20 markdown export, no new schema
+
+**Decision:** Add `career-copilot export-matches [--top N] [--out FILE]`, which writes the top-ranked stored listings (default top 20) to a markdown file under `data/exports/` (default `data/exports/matches_<today>.md`) for manual application follow-up. Extracted a new shared `_rank_with_analysis()` helper in `cli.py` — used by both the refactored `run_match()` and the new `run_export_matches()` — rather than duplicating the "fetch all stored listings with analysis, rank against preferences, pair each with its AI analysis" logic a second time.
+
+**Alternatives considered:**
+- Duplicating the ranking/pairing logic directly inside `run_export_matches()` — rejected in favor of extracting `_rank_with_analysis()`, since `run_match()` already did exactly this work and the two commands need to stay in sync as ranking evolves.
+- Matching the Discord digest's top-5 default — rejected; `export-matches` is for deliberate, sit-down application follow-up rather than a daily at-a-glance summary, so a larger default (20) is more useful for actually working through a list.
+- Adding a new "application link" field/table — unnecessary; every source since M1 already populates `Listing.url`, so the export just reads that existing field.
+
+**Rationale:** this satisfies the original ask — "save and store application links for me to go and apply to manually" — using infrastructure M5-M8 already built (`db.get_all_listings_with_analysis()`, `matching.rank_listings()`, `Listing.url`), with the only new code being the ranking/analysis-pairing extraction and the markdown-writing itself.
+
+**Trade-offs accepted:** none of real weight — this is a thin, additive command built entirely on existing read paths; the main design decision (extract vs. duplicate) was resolved in favor of extraction with no meaningful downside.
