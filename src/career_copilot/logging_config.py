@@ -26,3 +26,9 @@ def setup_logging() -> None:
     file_handler.setLevel(logging.DEBUG)
     file_handler.setFormatter(formatter)
     root_logger.addHandler(file_handler)
+
+    # httpx logs the full request URL at INFO — including query strings and,
+    # for the Discord webhook POST, the secret token embedded in the URL
+    # itself. Silencing it to WARNING keeps that out of both the console and
+    # the persistent log file.
+    logging.getLogger("httpx").setLevel(logging.WARNING)

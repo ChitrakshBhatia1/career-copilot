@@ -1,7 +1,8 @@
 import argparse
 import logging
 
-from career_copilot import db, discovery, matching
+from career_copilot import db, discovery, matching, notify
+from career_copilot.env import load_dotenv
 from career_copilot.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -15,6 +16,9 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("discover", help="Search configured sources for new opportunities.")
     subparsers.add_parser("match", help="Rank stored listings against your preferences.")
+    subparsers.add_parser(
+        "morning", help="Run discover, persist, match, and send a daily notification."
+    )
     return parser
 
 
@@ -49,8 +53,28 @@ def run_match() -> None:
         )
 
 
+def run_morning() -> None:
+    db.init_db()
+    listings = discovery.discover()
+    new_listings = db.save_new_listings(listings)
+
+    preferences = matching.load_preferences()
+    ranked_new = matching.rank_listings(new_listings, preferences)
+
+    message = notify.build_morning_message(new_listings, ranked_new)
+    sent = notify.send_discord_notification(message)
+
+    print(message)
+
+    if sent:
+        logger.info("morning: %d new listings, notification sent", len(new_listings))
+    else:
+        logger.info("morning: %d new listings, notification failed — see above", len(new_listings))
+
+
 def main(argv: list[str] | None = None) -> None:
     setup_logging()
+    load_dotenv()
     parser = build_parser()
     args = parser.parse_args(argv)
 
@@ -58,6 +82,8 @@ def main(argv: list[str] | None = None) -> None:
         run_discover()
     elif args.command == "match":
         run_match()
+    elif args.command == "morning":
+        run_morning()
 
 
 if __name__ == "__main__":
