@@ -1,6 +1,7 @@
 import argparse
 import logging
 
+from career_copilot import discovery
 from career_copilot.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -17,7 +18,9 @@ def build_parser() -> argparse.ArgumentParser:
 
 
 def run_discover() -> None:
-    logger.info("discover: not implemented yet")
+    listings = discovery.discover()
+    for listing in listings:
+        print(f"{listing.title} — {listing.company} ({listing.location})\n  {listing.url}")
 
 
 def main(argv: list[str] | None = None) -> None:
