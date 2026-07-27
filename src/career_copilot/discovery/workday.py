@@ -37,7 +37,9 @@ WORKDAY_JOBS_API_BASE = (
 )
 WORKDAY_PUBLIC_BASE = "https://{tenant}.{wd_number}.myworkdayjobs.com/{site}"
 REQUEST_TIMEOUT = 10.0
-PAGE_SIZE = 50
+# Workday's CXS API hard-caps `limit` at 20 -- confirmed live (25+ returns a
+# 400 with no explanatory message, just {"errorCode": "HTTP_400"}).
+PAGE_SIZE = 20
 
 
 class WorkdayAdapter:

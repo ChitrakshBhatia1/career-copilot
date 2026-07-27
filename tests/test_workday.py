@@ -3,7 +3,7 @@ import logging
 import httpx
 
 from career_copilot.discovery.models import Listing
-from career_copilot.discovery.workday import WorkdayAdapter
+from career_copilot.discovery.workday import PAGE_SIZE, WorkdayAdapter
 
 
 def _make_response(payload: dict):
@@ -75,6 +75,29 @@ def test_fetch_falls_back_to_external_path_when_bullet_fields_empty(monkeypatch)
     listings = adapter.fetch()
 
     assert listings[0].id == "/job/Remote/Software-Engineer--Intern_R99999"
+
+
+def test_page_size_stays_within_workdays_confirmed_limit_cap():
+    # Confirmed live against a real Workday tenant: the CXS API's `limit`
+    # param 400s above 20 with no explanatory message beyond
+    # {"errorCode": "HTTP_400"} -- this locks that constraint in so it can't
+    # silently regress back to a larger, broken page size.
+    assert PAGE_SIZE <= 20
+
+
+def test_fetch_sends_page_size_as_the_request_limit(monkeypatch):
+    captured = {}
+
+    def fake_post(url, json, timeout):
+        captured["json"] = json
+        return _make_response({"total": 0, "jobPostings": []})
+
+    monkeypatch.setattr("career_copilot.discovery.workday.httpx.post", fake_post)
+
+    adapter = WorkdayAdapter(company="Nike", tenant="nike", wd_number="wd1", site="External")
+    adapter.fetch()
+
+    assert captured["json"]["limit"] == PAGE_SIZE
 
 
 def test_fetch_returns_empty_list_and_logs_on_http_error(monkeypatch, caplog):

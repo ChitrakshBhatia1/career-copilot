@@ -9,3 +9,103 @@ name = "Stripe"
 tier = 1
 adapter = "greenhouse"
 token = "stripe"
+
+[[source]]
+name = "Razorpay"
+tier = 1
+adapter = "greenhouse"
+token = "razorpaysoftwareprivatelimited"
+
+[[source]]
+name = "PhonePe"
+tier = 1
+adapter = "greenhouse"
+token = "phonepe"
+
+[[source]]
+name = "Groww"
+tier = 1
+adapter = "greenhouse"
+token = "groww"
+
+[[source]]
+name = "Postman"
+tier = 1
+adapter = "greenhouse"
+token = "postman"
+
+[[source]]
+name = "InMobi"
+tier = 1
+adapter = "greenhouse"
+token = "inmobi"
+
+[[source]]
+name = "CRED"
+tier = 1
+adapter = "lever"
+token = "cred"
+
+[[source]]
+name = "Meesho"
+tier = 1
+adapter = "lever"
+token = "meesho"
+
+[[source]]
+name = "Freshworks"
+tier = 1
+adapter = "smartrecruiters"
+token = "Freshworks"
+
+[[source]]
+name = "Swiggy"
+tier = 1
+adapter = "smartrecruiters"
+token = "swiggy"
+
+[[source]]
+name = "Zomato"
+tier = 1
+adapter = "smartrecruiters"
+token = "Zomato1"
+
+[[source]]
+name = "NVIDIA"
+tier = 1
+adapter = "workday"
+tenant = "nvidia"
+wd_number = "wd5"
+site = "NVIDIAExternalCareerSite"
+
+[[source]]
+name = "Adobe"
+tier = 1
+adapter = "workday"
+tenant = "adobe"
+wd_number = "wd5"
+site = "external_experienced"
+
+[[source]]
+name = "Salesforce"
+tier = 1
+adapter = "workday"
+tenant = "salesforce"
+wd_number = "wd12"
+site = "External_Career_Site"
+
+[[source]]
+name = "Intel"
+tier = 1
+adapter = "workday"
+tenant = "intel"
+wd_number = "wd1"
+site = "External"
+
+[[source]]
+name = "BrowserStack"
+tier = 1
+adapter = "workday"
+tenant = "browserstack"
+wd_number = "wd3"
+site = "External"
