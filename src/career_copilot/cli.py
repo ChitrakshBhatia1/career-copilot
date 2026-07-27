@@ -1,7 +1,7 @@
 import argparse
 import logging
 
-from career_copilot import db, discovery
+from career_copilot import db, discovery, matching
 from career_copilot.logging_config import setup_logging
 
 logger = logging.getLogger(__name__)
@@ -14,6 +14,7 @@ def build_parser() -> argparse.ArgumentParser:
     )
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("discover", help="Search configured sources for new opportunities.")
+    subparsers.add_parser("match", help="Rank stored listings against your preferences.")
     return parser
 
 
@@ -31,6 +32,23 @@ def run_discover() -> None:
         print(f"{listing.title} — {listing.company} ({listing.location})\n  {listing.url}")
 
 
+def run_match() -> None:
+    db.init_db()
+    listings = db.get_all_listings()
+    if not listings:
+        logger.info("No stored listings yet — run `career-copilot discover` first.")
+        return
+
+    preferences = matching.load_preferences()
+    ranked = matching.rank_listings(listings, preferences)
+
+    logger.info("match: %d of %d stored listings ranked", len(ranked), len(listings))
+    for listing, score in ranked:
+        print(
+            f"[{score}] {listing.title} — {listing.company} ({listing.location})\n  {listing.url}"
+        )
+
+
 def main(argv: list[str] | None = None) -> None:
     setup_logging()
     parser = build_parser()
@@ -38,6 +56,8 @@ def main(argv: list[str] | None = None) -> None:
 
     if args.command == "discover":
         run_discover()
+    elif args.command == "match":
+        run_match()
 
 
 if __name__ == "__main__":

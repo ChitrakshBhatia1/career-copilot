@@ -1,0 +1,46 @@
+[role]
+keywords = [
+    "Software Engineer",
+    "Software Developer",
+    "Software Development Engineer",
+    "SDE",
+    "SWE",
+    "Backend Engineer",
+    "Backend Developer",
+    "Full Stack Engineer",
+    "Full Stack Developer",
+    "Platform Engineer",
+    "Application Engineer",
+    "Product Engineer",
+    "Systems Engineer",
+    "Engineering Intern",
+    "Software Engineering Intern",
+    "Product Sales Intern",
+    "Intern",
+    "Internship",
+    "Summer 2027 Intern",
+    "Summer Internship",
+    "SWE Intern",
+    "SDE Intern",
+    "Student",
+    "University",
+    "Campus",
+    "Graduate Intern",
+]
+
+[location]
+# India-major-city listings get a scoring bonus (see priority_weight below).
+priority_cities = ["Hyderabad", "Bangalore", "Bengaluru", "Pune", "Delhi", "Mumbai"]
+priority_weight = 3
+
+[exclude]
+keywords = [
+    "Senior",
+    "Staff",
+    "Principal",
+    "Director",
+    "Manager",
+    "5+ years",
+    "7+ years",
+    "Experienced",
+]

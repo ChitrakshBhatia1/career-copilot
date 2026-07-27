@@ -26,6 +26,10 @@ INSERT OR IGNORE INTO listings (id, title, company, location, url, updated_at)
 VALUES (?, ?, ?, ?, ?, ?)
 """
 
+SELECT_ALL_LISTINGS = """
+SELECT id, title, company, location, url, updated_at FROM listings
+"""
+
 
 def init_db() -> None:
     DB_DIR.mkdir(exist_ok=True)
@@ -52,3 +56,9 @@ def save_new_listings(listings: list[Listing]) -> list[Listing]:
                 new_listings.append(listing)
         conn.commit()
     return new_listings
+
+
+def get_all_listings() -> list[Listing]:
+    with sqlite3.connect(DB_FILE) as conn:
+        rows = conn.execute(SELECT_ALL_LISTINGS).fetchall()
+    return [Listing(*row) for row in rows]
