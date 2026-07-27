@@ -80,3 +80,17 @@ A log of significant technical decisions made on Career Copilot: what was decide
 **Rationale:** consistent with this project's stdlib-first bias (mirrors the `argparse` and `logging` decisions from M0) — `sqlite3` is fully sufficient for a single-table, single-process CLI tool with no concurrent writers, and isolating all SQL in one module keeps the option open to swap in a wrapper or a different backend later without touching call sites elsewhere.
 
 **Trade-offs accepted:** more verbose than a wrapper would be (raw SQL strings, manual cursor/rowcount handling for detecting which rows were newly inserted); no automatic migrations — schema changes will need to be hand-written as the table evolves (e.g. when M3 adds a `score` column, if that's how matching gets wired in).
+
+---
+
+## 2026-07-27 — Preferences config format: TOML (stdlib `tomllib`), keyword-count + location-bonus scoring with hard exclusion
+
+**Decision:** Store the user's matching preferences in `config/preferences.toml` and parse it with the standard library's `tomllib`, with `matching.py` scoring each listing by counting matched role keywords plus a location bonus, and hard-excluding any listing whose title matches a seniority keyword.
+
+**Alternatives considered:**
+- YAML — very common for human-edited config, more familiar from other ecosystems.
+- JSON — simplest parser, but worse for a hand-edited file — no comments, more punctuation-heavy for humans to maintain.
+
+**Rationale:** `tomllib` is stdlib as of Python 3.11 (read-only, which is fine since this file is hand-edited by the user, not written by the program) — consistent with this project's stdlib-first bias already established for `argparse`, `logging`, and `sqlite3`; TOML's table syntax (`[role]`, `[location]`, `[exclude]`) also maps cleanly onto the three preference categories (keywords/location/exclusions) without extra nesting. The scoring rule itself (keyword-count + location bonus, hard-excluding any seniority-keyword match) was kept intentionally simple/flat per the roadmap's "explainable in one sentence" requirement, rather than building a weighted multi-factor model.
+
+**Trade-offs accepted:** no write support from `tomllib` (fine today since nothing edits this file programmatically, but would need a third-party TOML writer or a format switch if that ever changes); the scoring model doesn't (yet) account for job-description content, real date ranges, or visa sponsorship — see the CLAUDE.md note below.
