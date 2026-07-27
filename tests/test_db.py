@@ -1,7 +1,19 @@
 import sqlite3
 
-from career_copilot.db import init_db, save_new_listings
+from career_copilot.db import get_all_listings, init_db, save_new_listings
 from career_copilot.discovery import Listing
+
+OLD_CREATE_LISTINGS_TABLE = """
+CREATE TABLE listings (
+    id TEXT NOT NULL,
+    title TEXT NOT NULL,
+    company TEXT NOT NULL,
+    location TEXT NOT NULL,
+    url TEXT NOT NULL UNIQUE,
+    updated_at TEXT NOT NULL,
+    first_seen_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)
+"""
 
 
 def _use_tmp_db(monkeypatch, tmp_path):
@@ -102,3 +114,62 @@ def test_save_new_listings_returns_only_brand_new_from_mixed_batch(monkeypatch, 
     new_listings = save_new_listings([already_seen, brand_new])
 
     assert new_listings == [brand_new]
+
+
+def test_init_db_migrates_pre_existing_db_missing_new_columns(monkeypatch, tmp_path):
+    # Simulate a database created before M5 added description/source: build
+    # the OLD 7-column schema by hand and insert a row directly via raw SQL,
+    # bypassing db.py entirely so nothing here depends on the new columns.
+    db_file = _use_tmp_db(monkeypatch, tmp_path)
+    with sqlite3.connect(db_file) as conn:
+        conn.execute(OLD_CREATE_LISTINGS_TABLE)
+        conn.execute(
+            "INSERT INTO listings (id, title, company, location, url, updated_at) "
+            "VALUES (?, ?, ?, ?, ?, ?)",
+            (
+                "1",
+                "Software Engineer, Intern",
+                "Anthropic",
+                "Remote",
+                "https://example.com/1",
+                "2026-07-01T00:00:00Z",
+            ),
+        )
+        conn.commit()
+
+    # init_db() must not raise when run against this pre-existing, old-shape
+    # database, and must add the missing columns via ALTER TABLE.
+    init_db()
+
+    with sqlite3.connect(db_file) as conn:
+        columns = {row[1] for row in conn.execute("PRAGMA table_info(listings)")}
+        assert "description" in columns
+        assert "source" in columns
+
+        row = conn.execute(
+            "SELECT id, title, description, source FROM listings WHERE id = ?", ("1",)
+        ).fetchone()
+
+    # The pre-existing row is untouched, and the new columns backfill to
+    # their declared defaults for it.
+    assert row == ("1", "Software Engineer, Intern", "", "unknown")
+
+
+def test_save_and_get_all_listings_round_trips_description_and_source(monkeypatch, tmp_path):
+    _use_tmp_db(monkeypatch, tmp_path)
+    init_db()
+
+    listing = Listing(
+        id="1",
+        title="Software Engineer, Intern",
+        company="Anthropic",
+        location="Remote",
+        url="https://example.com/1",
+        updated_at="2026-07-01T00:00:00Z",
+        description="Build cool things with a great team.",
+        source="greenhouse",
+    )
+
+    save_new_listings([listing])
+
+    assert get_all_listings() == [listing]

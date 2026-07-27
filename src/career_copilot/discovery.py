@@ -4,6 +4,8 @@ from dataclasses import dataclass
 
 import httpx
 
+from career_copilot.htmltext import strip_html
+
 logger = logging.getLogger(__name__)
 
 GREENHOUSE_API_BASE = "https://boards-api.greenhouse.io/v1/boards/{token}/jobs"
@@ -25,10 +27,14 @@ class Listing:
     location: str
     url: str
     updated_at: str
+    # Defaulted so the ~35 existing keyword-arg call sites across the test
+    # suite don't need touching for this plumbing milestone.
+    description: str = ""
+    source: str = "unknown"
 
 
 def fetch_source(company: str, token: str) -> list[Listing]:
-    url = GREENHOUSE_API_BASE.format(token=token)
+    url = GREENHOUSE_API_BASE.format(token=token) + "?content=true"
     try:
         response = httpx.get(url, timeout=REQUEST_TIMEOUT)
         response.raise_for_status()
@@ -42,6 +48,8 @@ def fetch_source(company: str, token: str) -> list[Listing]:
                 location=job["location"]["name"],
                 url=job["absolute_url"],
                 updated_at=job["updated_at"],
+                description=strip_html(job.get("content", "")),
+                source="greenhouse",
             )
             for job in jobs
         ]

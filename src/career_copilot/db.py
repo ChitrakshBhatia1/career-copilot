@@ -22,19 +22,28 @@ CREATE TABLE IF NOT EXISTS listings (
 """
 
 INSERT_LISTING = """
-INSERT OR IGNORE INTO listings (id, title, company, location, url, updated_at)
-VALUES (?, ?, ?, ?, ?, ?)
+INSERT OR IGNORE INTO listings
+    (id, title, company, location, url, updated_at, description, source)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?)
 """
 
 SELECT_ALL_LISTINGS = """
-SELECT id, title, company, location, url, updated_at FROM listings
+SELECT id, title, company, location, url, updated_at, description, source FROM listings
 """
+
+
+def _add_column_if_missing(conn: sqlite3.Connection, table: str, column: str, coltype: str) -> None:
+    cols = {row[1] for row in conn.execute(f"PRAGMA table_info({table})")}
+    if column not in cols:
+        conn.execute(f"ALTER TABLE {table} ADD COLUMN {column} {coltype}")
 
 
 def init_db() -> None:
     DB_DIR.mkdir(exist_ok=True)
     with sqlite3.connect(DB_FILE) as conn:
         conn.execute(CREATE_LISTINGS_TABLE)
+        _add_column_if_missing(conn, "listings", "description", "TEXT NOT NULL DEFAULT ''")
+        _add_column_if_missing(conn, "listings", "source", "TEXT NOT NULL DEFAULT 'unknown'")
 
 
 def save_new_listings(listings: list[Listing]) -> list[Listing]:
@@ -50,6 +59,8 @@ def save_new_listings(listings: list[Listing]) -> list[Listing]:
                     listing.location,
                     listing.url,
                     listing.updated_at,
+                    listing.description,
+                    listing.source,
                 ),
             )
             if cursor.rowcount:

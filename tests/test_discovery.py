@@ -18,6 +18,10 @@ def test_fetch_source_maps_fields_correctly(monkeypatch):
                 "absolute_url": "https://boards.greenhouse.io/anthropic/jobs/12345",
                 "location": {"name": "San Francisco, CA"},
                 "updated_at": "2026-07-01T00:00:00Z",
+                # Greenhouse's real "content" field comes back double-HTML-entity
+                # escaped; this fixture exercises that the field mapping runs it
+                # through strip_html rather than storing it verbatim.
+                "content": "&lt;p&gt;Build cool things&lt;/p&gt;",
             }
         ],
         "meta": {"total": 1},
@@ -37,6 +41,8 @@ def test_fetch_source_maps_fields_correctly(monkeypatch):
             location="San Francisco, CA",
             url="https://boards.greenhouse.io/anthropic/jobs/12345",
             updated_at="2026-07-01T00:00:00Z",
+            description="Build cool things",
+            source="greenhouse",
         )
     ]
 
@@ -140,5 +146,6 @@ def test_discover_continues_past_a_failing_source(monkeypatch):
             location="Remote",
             url="https://boards.greenhouse.io/stripe/jobs/999",
             updated_at="2026-07-02T00:00:00Z",
+            source="greenhouse",
         )
     ]
