@@ -1,0 +1,11 @@
+[[source]]
+name = "Anthropic"
+tier = 1
+adapter = "greenhouse"
+token = "anthropic"
+
+[[source]]
+name = "Stripe"
+tier = 1
+adapter = "greenhouse"
+token = "stripe"
