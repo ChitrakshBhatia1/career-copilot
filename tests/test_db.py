@@ -1,6 +1,14 @@
 import sqlite3
 
-from career_copilot.db import get_all_listings, init_db, save_new_listings
+from career_copilot.ai.models import AIAnalysis
+from career_copilot.db import (
+    get_all_listings,
+    get_all_listings_with_analysis,
+    get_unanalyzed_listings,
+    init_db,
+    save_ai_analysis,
+    save_new_listings,
+)
 from career_copilot.discovery import Listing
 
 OLD_CREATE_LISTINGS_TABLE = """
@@ -173,3 +181,47 @@ def test_save_and_get_all_listings_round_trips_description_and_source(monkeypatc
     save_new_listings([listing])
 
     assert get_all_listings() == [listing]
+
+
+def test_get_unanalyzed_listings_only_returns_rows_missing_ai_analyzed_at(monkeypatch, tmp_path):
+    _use_tmp_db(monkeypatch, tmp_path)
+    init_db()
+
+    analyzed = _make_listing("https://example.com/1")
+    unanalyzed = _make_listing("https://example.com/2")
+    save_new_listings([analyzed, unanalyzed])
+
+    save_ai_analysis(
+        analyzed.url,
+        AIAnalysis(
+            visa_sponsorship_mentioned=True,
+            likely_summer_2027_eligible=True,
+            notes="Great fit.",
+        ),
+    )
+
+    remaining = get_unanalyzed_listings()
+
+    assert remaining == [unanalyzed]
+
+
+def test_save_ai_analysis_round_trips_through_get_all_listings_with_analysis(monkeypatch, tmp_path):
+    _use_tmp_db(monkeypatch, tmp_path)
+    init_db()
+
+    analyzed = _make_listing("https://example.com/1")
+    unanalyzed = _make_listing("https://example.com/2")
+    save_new_listings([analyzed, unanalyzed])
+
+    analysis = AIAnalysis(
+        visa_sponsorship_mentioned=True,
+        likely_summer_2027_eligible=False,
+        notes="Mentions sponsorship but timeline unclear.",
+    )
+    save_ai_analysis(analyzed.url, analysis)
+
+    pairs = get_all_listings_with_analysis()
+    results_by_url = {listing.url: listing_analysis for listing, listing_analysis in pairs}
+
+    assert results_by_url[analyzed.url] == analysis
+    assert results_by_url[unanalyzed.url] is None

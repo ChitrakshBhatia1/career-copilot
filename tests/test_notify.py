@@ -2,6 +2,7 @@ import logging
 
 import httpx
 
+from career_copilot.ai.models import AIAnalysis
 from career_copilot.discovery import Listing
 from career_copilot.notify import (
     DISCORD_MESSAGE_LIMIT,
@@ -51,6 +52,35 @@ def test_build_morning_message_includes_ranked_entries_and_respects_top_n():
     assert listings[0].url in message
     assert listings[1].url in message
     assert listings[2].url not in message
+
+
+def test_build_morning_message_without_analysis_by_url_still_works():
+    # Old call sites that predate the analysis_by_url parameter must keep
+    # working unchanged since it defaults to None.
+    listings = [_make_listing("1")]
+    ranked_new = [(listings[0], 5)]
+
+    message = build_morning_message(listings, ranked_new)
+
+    assert listings[0].url in message
+    assert "visa✓" not in message
+    assert "2027-likely✓" not in message
+
+
+def test_build_morning_message_appends_ai_flags_for_matched_listings():
+    listings = [_make_listing("1")]
+    ranked_new = [(listings[0], 5)]
+    analysis_by_url = {
+        listings[0].url: AIAnalysis(
+            visa_sponsorship_mentioned=True,
+            likely_summer_2027_eligible=True,
+            notes="Strong match.",
+        )
+    }
+
+    message = build_morning_message(listings, ranked_new, analysis_by_url)
+
+    assert "[visa✓ | 2027-likely✓]" in message
 
 
 def test_send_discord_notification_returns_false_when_webhook_url_unset(monkeypatch, caplog):
