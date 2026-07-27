@@ -23,6 +23,8 @@ The initial focus is Summer 2027 internship and new-grad opportunity discovery, 
 
 M0 (project foundation) is complete: a `uv`-managed `src/` layout package (`src/career_copilot/`) with an `argparse`-based CLI (`cli.py`), centralized logging (`logging_config.py` — console INFO+, rotating file DEBUG+ under `logs/`), a `pytest` suite (`tests/`), and `ruff` for linting/formatting. `hello.py` and the old plain `.venv` are gone. Significant technical decisions are logged in `docs/engineering-decisions.md` as they're made. Do not assume any of the architecture below already exists in code beyond what's described here — treat the rest as the direction to build toward. As real modules, dependencies, and tooling are added, update this file so it stays accurate rather than aspirational.
 
+M1 (discovery from a small number of sources) is also complete: a new `discovery.py` module fetches live listings from the public Greenhouse Boards API for two hardcoded sources (Anthropic and Stripe), filters them down to internship/2027-relevant titles with a word-boundary keyword regex, and returns them as frozen `Listing` dataclasses. Per-source fetch failures (network errors, malformed JSON) are caught and logged rather than crashing the whole run. The `career-copilot discover` command now calls this module and prints the surviving listings instead of the old stub. This pulled in `httpx` as a new dependency for outbound HTTP requests; see `docs/engineering-decisions.md` for why `httpx` was chosen over `requests` and why Greenhouse/Anthropic/Stripe were chosen as the initial sources.
+
 Because the pipeline above naturally decomposes into distinct stages (discovery, automation, matching, tailoring, generation, tracking, notification) with a multi-agent design explicitly called out, favor a modular package layout from the start (e.g. one package/module per pipeline stage) rather than a single monolithic script, even while functionality is still minimal.
 
 ## Working conventions
@@ -42,5 +44,31 @@ uv run career-copilot --help   # run the CLI
 uv run career-copilot discover # run a subcommand
 uv run pytest                  # run the test suite
 uv run ruff check .            # lint
-uv run ruff format .           # auto-format (drop --check to actually rewrite)
-```
+uv run ruff format .           # auto-format (drop --check to actually rewrite)```
+
+## Default Working Style
+
+Assume you are the primary implementation engineer.
+
+When given an approved milestone:
+
+- Execute the milestone independently.
+- Break work into logical commits.
+- Run tests after each significant change.
+- Update documentation.
+- Update engineering decisions.
+- Explain only important design decisions.
+- Ask for input only when a real architectural decision exists.
+- Otherwise continue autonomously.
+
+Prefer progress over conversation.
+
+Do not stop to explain anything unless I explicitly ask.
+
+Only interrupt me when:
+
+- external credentials are needed,
+- or a change conflicts with previous engineering decisions.
+- or details regarding rules/policies are needed.
+
+Never merge to main without my approval, anything else is fine.

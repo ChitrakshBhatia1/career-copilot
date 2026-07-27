@@ -41,3 +41,29 @@ A log of significant technical decisions made on Career Copilot: what was decide
 **Rationale:** the project is meant to run unattended every morning; a rotating file gives a persistent, debuggable history of each run without manual log management. No new dependency required.
 
 **Trade-offs accepted:** introduces log rotation/file-handler configuration as an extra concept in the foundation milestone, on top of the CLI and packaging concepts already being introduced.
+
+---
+
+## 2026-07-27 — HTTP client library: httpx
+
+**Decision:** Use `httpx` for outbound HTTP requests to source APIs (starting with Greenhouse).
+
+**Alternatives considered:**
+- `requests` — more ubiquitous, simpler sync-only mental model, would've been marginally easier for someone new to Python.
+
+**Rationale:** chosen to keep the door open for async I/O later (e.g. once M1 grows past 2 hardcoded sources and fetching sequentially becomes slow, or once multi-agent orchestration in the deferred roadmap wants concurrent fetches), and its API is close enough to `requests` that the learning cost is low.
+
+**Trade-offs accepted:** one more concept than `requests` would have introduced this early (though M1 itself uses it synchronously, not `async`/`await`, so the immediate cost is minimal); slightly smaller community/StackOverflow surface than `requests`.
+
+---
+
+## 2026-07-27 — ATS + initial sources: Greenhouse Boards API, Anthropic + Stripe
+
+**Decision:** Fetch listings from the public Greenhouse Boards API (`boards-api.greenhouse.io/v1/boards/{token}/jobs`), starting with two sources: Anthropic and Stripe.
+
+**Alternatives considered:**
+- Lever API (`jobs.lever.co`) as the ATS — also public/no-auth, but Greenhouse was picked first since it's the more common ATS among target companies; other company pairs (e.g. Figma+Coinbase, Palantir+Plaid) were considered but not required for M1's "≥2 sources" bar.
+
+**Rationale:** `boards-api.greenhouse.io/v1/boards/{token}/jobs` requires no authentication, returns a simple, fully-documented-by-observation JSON shape (`{"jobs": [...], "meta": {...}}`, no pagination), and both companies were confirmed live during implementation to actually return real, current listings (Stripe currently has a live "Software Engineer, Intern" Bengaluru posting matching the keyword filter; Anthropic currently returns zero intern/2027 matches, which is an expected empty-result state, not a bug).
+
+**Trade-offs accepted:** hardcoded to exactly these two companies/board tokens for now — no config file or dynamic source list yet (that's implicitly deferred to whenever sources need to become user-configurable, not explicitly scheduled); Lever's slightly different JSON shape is untested by this implementation.
