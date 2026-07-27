@@ -108,3 +108,16 @@ A log of significant technical decisions made on Career Copilot: what was decide
 **Rationale:** a Discord webhook needs exactly one secret (the URL) and no bot process to host or maintain, matching this project's bias toward the simplest thing that satisfies "runs unattended every morning." The `.env` loader was kept to ~15 lines of stdlib `os`/`Path` code rather than adding `python-dotenv`, consistent with every prior dependency decision in this project (only `httpx` has been added as an actual new dependency across all four milestones) — `setdefault` semantics mean real shell-exported env vars (e.g. from a cron job's environment) still win over the file.
 
 **Trade-offs accepted:** switching channels later (e.g. to email) means writing a new `notify.py` implementation rather than reconfiguring an existing one — no abstraction over "notification channel" was built since only one was ever needed for the MVP; the custom `.env` loader doesn't handle quoted values, multiline values, or variable interpolation the way `python-dotenv` does, which is fine for a single `DISCORD_WEBHOOK_URL=...` line but would need revisiting if `.env` usage grows more complex.
+
+---
+
+## 2026-07-27 — HTML-to-text: `beautifulsoup4` (stdlib `html.parser` backend), not stdlib-only
+
+**Decision:** Add `beautifulsoup4` as a dependency for stripping job-description HTML down to plain text (`htmltext.py`'s `strip_html()`), configured to use the stdlib `html.parser` backend rather than `lxml`.
+
+**Alternatives considered:**
+- Hand-rolling a tag stripper with stdlib `html.parser.HTMLParser` directly — what M1–M4's stdlib-first bias would normally favor, and the more consistent choice on precedent alone.
+
+**Rationale:** rejected the hand-rolled option because M8 (later in this same v0.2 plan) will need real HTML/DOM parsing for Playwright-scraped pages anyway, and having two different ad hoc HTML-handling approaches in the codebase — one hand-rolled for Greenhouse, one real for Playwright — is worse than introducing one well-tested library now that covers both needs. This is the second stdlib-first exception in the project after `httpx` — both were adopted only when the stdlib alternative would mean meaningfully more hand-rolled code for something a small, well-established library does better. Using `beautifulsoup4` with the `html.parser` backend avoids also needing `lxml` (a compiled/C-extension dependency this project doesn't need the extra parsing speed from, given real data volumes are still small).
+
+**Trade-offs accepted:** one more dependency; and a genuine gotcha worth recording here since it's not obvious and cost real debugging effort — Greenhouse's `content` field is double HTML-entity-escaped (the raw string literally contains `&lt;h2&gt;` rather than a real `<h2>` tag), so any future code touching this field must call `html.unescape()` before treating it as HTML, or parsing will silently produce garbage (visible literal tag characters instead of stripped text) rather than an obvious error.
