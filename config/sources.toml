@@ -109,3 +109,10 @@ adapter = "workday"
 tenant = "browserstack"
 wd_number = "wd3"
 site = "External"
+
+[[source]]
+name = "Internshala"
+tier = 2
+adapter = "playwright"
+url = "https://internshala.com/internships/"
+parser = "internshala"

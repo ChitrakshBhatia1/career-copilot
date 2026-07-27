@@ -1,0 +1,146 @@
+<!--
+Trimmed excerpt of real Internshala search-page HTML (internshala.com/internships/),
+captured during the M8 spike and cut down to 3 `div.individual_internship` cards:
+two structurally normal cards (real title/company/location/description text,
+slightly trimmed of unrelated skill-tag/logo noise), and one deliberately
+broken card (missing `p.company-name` entirely) to exercise the parser's
+"skip one bad card, keep going" behavior.
+-->
+<html>
+<body>
+<div class="search-result-inner-container">
+
+<div class="container-fluid individual_internship logged_out_jd_summary visibilityTrackerItem"
+     data-href="/internship/detail/business-development-sales-internship-in-jaipur-at-alpever-technologies-llp1784713757"
+     employment_type="internship" id="individual_internship_3217084" internshipid="3217084">
+  <div class="internship_meta duration_meta">
+    <div class="internship-heading-container">
+      <div class="company generic_company">
+        <div class="generic_container">
+          <h2 class="job-internship-name">
+            <a class="job-title-href" href="/internship/detail/business-development-sales-internship-in-jaipur-at-alpever-technologies-llp1784713757" id="job_title" target="_blank">Business Development (Sales)</a>
+          </h2>
+        </div>
+        <div class="heading_6 company_name">
+          <div class="company_and_premium">
+            <p class="company-name">
+                                Alpever Technologies LLP                        </p>
+            <div class="actively-hiring-badge">Actively hiring</div>
+          </div>
+        </div>
+      </div>
+      <div class="internship_logo">
+        <img alt="Alpever Technologies LLP" src="https://internshala-uploads.internshala.com/logo%2F2eptbj5tfnb-4524.jpg.webp"/>
+      </div>
+    </div>
+    <div class="individual_internship_details individual_internship_internship">
+      <div class="detail-row-1">
+        <!-- location -->
+        <div class="row-1-item locations">
+          <i class="ic-16-map-pin"></i>
+          <span>
+            <a>Jaipur</a> </span>
+        </div>
+        <!-- /location -->
+        <!-- STIPEND -->
+        <div class="row-1-item">
+          <i class="ic-16-money"></i>
+          <span class="stipend">₹ 8,500 - 25,000 /month</span> </div>
+        <!-- /stipend -->
+      </div>
+      <div class="about_job">
+        <div class="ic-16-assignment icon"></div>
+        <div class="text">
+                        1. Scout for the leads for the demo
+2. Keep engaging with the customers and give them demo
+3. Negotiate with the Customer and close the customer                    </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="container-fluid individual_internship logged_out_jd_summary visibilityTrackerItem"
+     data-href="/internship/detail/data-analytics-internship-in-multiple-locations-at-venkatesh1785126699"
+     employment_type="internship" id="individual_internship_3222139" internshipid="3222139">
+  <div class="internship_meta duration_meta">
+    <div class="internship-heading-container">
+      <div class="company generic_company">
+        <div class="generic_container">
+          <h2 class="job-internship-name">
+            <a class="job-title-href" href="/internship/detail/data-analytics-internship-in-multiple-locations-at-venkatesh1785126699" id="job_title" target="_blank">
+              Data Analytics
+            </a>
+          </h2>
+        </div>
+        <div class="heading_6 company_name">
+          <div class="company_and_premium">
+            <p class="company-name">
+              Venkatesh
+            </p>
+            <div class="actively-hiring-badge">Actively hiring</div>
+          </div>
+        </div>
+      </div>
+      <div class="internship_logo">
+        <img alt="Venkatesh" src="/static/images/search/placeholder_logo.svg"/>
+      </div>
+    </div>
+    <div class="individual_internship_details individual_internship_internship">
+      <div class="detail-row-1">
+        <!-- location -->
+        <div class="row-1-item locations">
+          <i class="ic-16-map-pin"></i>
+          <span>
+            <a>Secunderabad, Hyderabad</a>
+            (Hybrid)
+          </span>
+        </div>
+        <!-- /location -->
+      </div>
+      <div class="about_job">
+        <div class="ic-16-assignment icon"></div>
+        <div class="text">
+          1. Enter and update data accurately into software systems and spreadsheets
+2. Verify and review data for errors or inconsistencies
+3. Maintain confidentiality of sensitive information
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Deliberately broken card: no `p.company-name` element at all, simulating
+     the kind of structural inconsistency real-world HTML across ~50
+     different postings is expected to have. Parser must skip this card
+     (logged) without crashing the rest of the parse. -->
+<div class="container-fluid individual_internship logged_out_jd_summary visibilityTrackerItem"
+     data-href="/internship/detail/broken-card-internship-in-nowhere-at-mystery-corp999999"
+     employment_type="internship" id="individual_internship_9999999" internshipid="9999999">
+  <div class="internship_meta duration_meta">
+    <div class="internship-heading-container">
+      <div class="company generic_company">
+        <div class="generic_container">
+          <h2 class="job-internship-name">
+            <a class="job-title-href" href="/internship/detail/broken-card-internship-in-nowhere-at-mystery-corp999999" id="job_title" target="_blank">Mystery Internship</a>
+          </h2>
+        </div>
+        <!-- no `p.company-name` here -->
+      </div>
+    </div>
+    <div class="individual_internship_details individual_internship_internship">
+      <div class="detail-row-1">
+        <div class="row-1-item locations">
+          <i class="ic-16-map-pin"></i>
+          <span><a>Nowhere</a></span>
+        </div>
+      </div>
+      <div class="about_job">
+        <div class="text">Some description text.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</div>
+</body>
+</html>

@@ -16,6 +16,8 @@ from career_copilot.discovery.greenhouse import GreenhouseAdapter
 from career_copilot.discovery.icims import ICIMSAdapter
 from career_copilot.discovery.lever import LeverAdapter
 from career_copilot.discovery.models import Listing
+from career_copilot.discovery.parsers import PARSERS
+from career_copilot.discovery.playwright_adapter import PlaywrightAdapter
 from career_copilot.discovery.smartrecruiters import SmartRecruitersAdapter
 from career_copilot.discovery.workday import WorkdayAdapter
 
@@ -54,12 +56,23 @@ def _build_icims(entry: dict) -> SourceAdapter:
     return ICIMSAdapter(company=entry["name"])
 
 
+def _build_playwright(entry: dict) -> SourceAdapter:
+    # `entry["parser"]` looks up the pure `parse_x(html) -> list[Listing]`
+    # function to pair with the fetch -- both this lookup and `entry["url"]`
+    # raise `KeyError` on a malformed config entry, caught the same generic
+    # way `_build_adapter()` already handles every other adapter's missing
+    # required fields.
+    parser = PARSERS[entry["parser"]]
+    return PlaywrightAdapter(name=entry["name"], url=entry["url"], parser=parser)
+
+
 _ADAPTER_BUILDERS: dict[str, Callable[[dict], SourceAdapter]] = {
     "greenhouse": _build_greenhouse,
     "lever": _build_lever,
     "smartrecruiters": _build_smartrecruiters,
     "workday": _build_workday,
     "icims": _build_icims,
+    "playwright": _build_playwright,
 }
 
 
